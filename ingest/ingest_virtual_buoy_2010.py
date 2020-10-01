@@ -1,7 +1,7 @@
 import s3fs
 import h5py
 # Simplify statement to import all
-from pandas_spark_converter import h5_to_pd_to_spark, h5_time_to_pd_to_spark, h5_meta_to_pd_to_spark
+from pandas_spark_converter import *
 from spark_to_db import write_to_postgres
 
 print("Starting to process data sets in h5 file.")

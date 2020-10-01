@@ -5,8 +5,12 @@ Module to enable conversion from h5 data set to a spark df
 import numpy as np
 import pandas as pd
 from pyspark.sql import SparkSession
+
+# TODO migrate code to driver
 spark = SparkSession.builder.appName("Ingest h5 files").getOrCreate()
 sc = spark.sparkContext
+
+# Reduce information printed on spark terminal
 sc.setLogLevel("ERROR")
 
 def h5_to_pd_to_spark(dataset):
@@ -45,7 +49,6 @@ def h5_meta_to_pd_to_spark(dataset):
     :param dataset:
     :return:
     """
-
     meta_pd = pd.DataFrame(np.array(dataset))
     jurisdiction = meta_pd['jurisdiction']
     N = len(jurisdiction)

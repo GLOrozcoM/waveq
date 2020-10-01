@@ -1,3 +1,8 @@
+"""
+Module to encapsulate turning an h5 data set into a spark RDD.
+- each file could be about ~6Gb
+"""
+
 from ingest_s3 import get_s3_h5
 from spark_to_db import write_to_postgres
 from pyspark.sql import SparkSession
@@ -27,10 +32,11 @@ print("Job took {} to complete".format(total_rdd))
 print(coord_rdd.take(20))
 
 # Convert into spark df
+# -- key issue, going into spark df
 print("Converting rdd into df")
 df_time = time.time()
 cols = ["Lat", "Long"]
-coord_df = coord_rdd.toDF()
+coord_df = coord_rdd.toDF(cols)
 df_end = time.time()
 total_df = df_end - df_time
 print("Finished turning into df {}".format(total_df))

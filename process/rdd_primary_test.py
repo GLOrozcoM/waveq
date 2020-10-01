@@ -1,3 +1,8 @@
+"""
+Module to encapsulate turning an h5 data set into a spark RDD.
+- each file could be about ~90Gb
+"""
+
 from ingest_s3 import get_s3_h5
 from spark_to_db import write_to_postgres
 from pyspark.sql import SparkSession

@@ -1,5 +1,7 @@
 """
 Module to encapsulate reading credentials.
+- DB roles and passwords
+- IP addresses
 """
 
 def read_db_creds(file_path):
@@ -9,6 +11,7 @@ def read_db_creds(file_path):
     :return:
     """
     # TODO clean up
+    # -- assume single line holds a role and password
     properties = {}
     file = open(file_path, "r")
     line = file.readline()
