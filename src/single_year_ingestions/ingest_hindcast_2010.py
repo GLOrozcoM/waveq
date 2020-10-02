@@ -7,6 +7,7 @@ from spark_to_db import write_to_postgres
 print("Starting to get data set from s3.")
 s3_endpoint = "s3://wpto-pds-us-wave/v1.0.0/US_wave_2010.h5"
 h5_file = get_s3_h5(s3_endpoint)
+print("Completed getting data from s3.")
 
 dataset_keys = list(h5_file.keys())
 
