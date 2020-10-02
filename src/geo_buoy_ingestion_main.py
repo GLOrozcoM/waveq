@@ -1,7 +1,7 @@
 # Simplify statement to import all
-from ingest_s3 import get_s3_h5
-from pandas_spark_converter import *
-from spark_to_db import write_to_postgres
+from ingest.ingest_s3 import get_s3_h5
+from process.pandas_spark_converter import *
+from database.spark_to_db import write_to_postgres
 from pyspark.sql.functions import monotonically_increasing_id
 from pyspark.sql.functions import lit
 import time

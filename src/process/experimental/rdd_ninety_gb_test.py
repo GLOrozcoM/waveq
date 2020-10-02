@@ -1,5 +1,5 @@
 """
-Module to encapsulate turning an h5 data set into a spark RDD.
+Module to encapsulate turning an h5 data set riectly into a spark RDD.
 - each file could be about ~90Gb
 """
 

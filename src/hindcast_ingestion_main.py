@@ -1,7 +1,7 @@
 # Simplify statement to import all
-from ingest_s3 import get_s3_h5
-from pandas_spark_converter import *
-from spark_to_db import write_to_postgres
+from ingest.ingest_s3 import get_s3_h5
+from process.pandas_spark_converter import *
+from database.spark_to_db import write_to_postgres
 from pyspark.sql.functions import monotonically_increasing_id
 import time
 
@@ -59,7 +59,7 @@ for i in range(0, 32):
 
     # Write to TimescaleDB instance
     print("Started writing {} to db.".format("power table"))
-    db_name = "wave_hindcast_power"
+    db_name = "wave_hindcast_power_test"
     write_to_postgres(db_name, power_sp, "power_" + year)
     write_to_postgres(db_name, coord_sp, "coordinates")
     print("Completed writing {} to db".format("power table"))

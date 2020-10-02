@@ -32,7 +32,7 @@ def get_s3_h5_files(csv_line):
     bucket = s3_resource.Bucket("wpto-pds-us-wave")
     obj = bucket.Object(key='v1.0.0/virtual_buoy/US_virtual_buoy_2010.h5')
 
-    # TODO bottleneck for time out
+    # Time out occurring here
     # -- access byte stream for reads
     s3_file = obj.get()['Body'].read()
 
