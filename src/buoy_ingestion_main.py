@@ -114,7 +114,7 @@ if __name__ == "__main__":
         energy_h5, swh_h5, time_h5, coord_h5 = extract_variables(h5_file)
         power_h5 = calculate_power(swh_h5, energy_h5)
         power_sp, time_sp, coord_sp = convert_spark_df(power_h5, time_h5, coord_h5)
-        join_power_time(power_sp, time_sp)
+        power_sp = join_power_time(power_sp, time_sp)
 
         # Database writing
         db_name = "buoy_power"
