@@ -1,3 +1,10 @@
+"""
+Module to encapsulate ingesting buoy data.
+Currently takes 5671 seconds (94 minutes) to complete.
+Single year takes 174 seconds to complete.
+Single location write out takes 3 seconds to complete.
+"""
+
 from ingest.ingest_s3 import call_s3_to_h5
 from process.pandas_spark_converter import *
 from database.spark_to_db import write_to_postgres
