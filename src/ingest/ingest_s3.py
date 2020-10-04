@@ -4,7 +4,8 @@ Module to encapsulate getting data from s3.
 import s3fs
 import h5py
 
-def get_s3_h5(s3_endpoint):
+
+def call_s3_to_h5(s3_endpoint):
     """ Get h5 file from s3 with an endpoint.
 
     :param s3_endpoint:
