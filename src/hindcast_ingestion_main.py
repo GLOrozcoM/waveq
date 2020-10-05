@@ -143,33 +143,35 @@ def join_power_time(power_sp, time_sp):
     return power_sp
 
 
-# Data is divided into 32 separate files for 32 years (1979 - 2010)
-for i in range(0, 32):
-    begin_single_year = time.time()
-    year = str(1979 + i)
+if __name__ == "__main__":
 
-    h5_file = get_s3_h5(year)
-    energy_h5, swh_h5, time_h5, coord_h5 = extract_vars(h5_file)
-    vars = [energy_h5, swh_h5]
-    sliced_sets = slice_sets(vars)
-    power_h5 = calculate_power(sliced_sets)
+    # Data is divided into 32 separate files for 32 years (1979 - 2010)
+    for i in range(0, 32):
+        begin_single_year = time.time()
+        year = str(1979 + i)
 
-    # Convert to spark df
-    print("Converting power to spark df")
-    power_sp = h5_to_pd_to_spark(power_h5)
-    print("Completed power conversion to spark df")
+        h5_file = get_s3_h5(year)
+        energy_h5, swh_h5, time_h5, coord_h5 = extract_vars(h5_file)
+        vars = [energy_h5, swh_h5]
+        sliced_sets = slice_sets(vars)
+        power_h5 = calculate_power(sliced_sets)
+
+        # Convert to spark df
+        print("Converting power to spark df")
+        power_sp = h5_to_pd_to_spark(power_h5)
+        print("Completed power conversion to spark df")
 
 
-    time_sp, coord_sp = convert_coord_time_spark_df(time_h5, coord_h5)
-    power_sp = join_power_time(power_sp, time_sp)
+        time_sp, coord_sp = convert_coord_time_spark_df(time_h5, coord_h5)
+        power_sp = join_power_time(power_sp, time_sp)
 
-    # Write to TimescaleDB instance
-    db_name = "hindcast_test"
-    write_to_db(db_name, power_sp, coord_sp, year)
+        # Write to TimescaleDB instance
+        db_name = "hindcast_test"
+        write_to_db(db_name, power_sp, coord_sp, year)
 
-    end_single_year = time.time() - begin_single_year
-    print("Single year took {} seconds to complete".format(end_single_year))
+        end_single_year = time.time() - begin_single_year
+        print("Single year took {} seconds to complete".format(end_single_year))
 
-end_all_years = time.time() - begin_all_years
-print("Hindcast wave ingestion and processing completed")
-print("Process took {} many seconds to complete".format(end_all_years))
+    end_all_years = time.time() - begin_all_years
+    print("Hindcast wave ingestion and processing completed")
+    print("Process took {} many seconds to complete".format(end_all_years))
