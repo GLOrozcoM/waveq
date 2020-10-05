@@ -4,6 +4,7 @@ Module to serve as utility for geo_buoy_ingestion_main.
 
 from ingest.ingest_s3 import call_s3_to_h5
 from database.spark_to_db import write_to_postgres
+from process.pandas_spark_converter import *
 from pyspark.sql.functions import monotonically_increasing_id
 from pyspark.sql.functions import lit
 
