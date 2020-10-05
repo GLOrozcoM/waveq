@@ -5,8 +5,7 @@ Module to test optimal slicing dimensions of h5 data sets before being processed
 from ingest.ingest_s3 import call_s3_to_h5
 import time
 import os
-print(os.getcwd())
-
+import numpy as np
 
 def get_s3_h5(year):
     """
@@ -52,7 +51,7 @@ def slice_single_set(h5_dataset, y_range, x_range):
     end = time.time() - begin
     print("Finished slicing. It took {} seconds.".format(end))
     with open("/home/ubuntu/waveq/src/logs/slice_log.txt", "a") as f:
-        f.write("Slice of y_range (time stamp): {} and x_range (locations): {} took {} seconds."\
+        f.write("Slice of y_range (time stamp): {} and x_range (locations): {} took {} seconds.\n"\
                 .format(y_range, x_range, end))
     return sliced_set
 
@@ -66,7 +65,7 @@ def slice_sets(vars_list):
     """
     sliced_vars = []
     y_range = [0,2918]
-    x_range = [0,1000]
+    x_range = [0,1600]
     for var in vars_list:
         single_sliced = slice_single_set(var, y_range, x_range)
         sliced_vars.append(single_sliced)
