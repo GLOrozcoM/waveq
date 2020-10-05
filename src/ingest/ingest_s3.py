@@ -14,5 +14,5 @@ def call_s3_to_h5(s3_endpoint):
     # TODO does this need to be closed?
     # -- consider sending migrating opening to driver and closing file
     s3 = s3fs.S3FileSystem()
-    h5_file = h5py.File(s3.open(s3_endpoint,"rb"))
+    h5_file = h5py.File(s3.open(s3_endpoint,"rb"), "r")
     return h5_file
