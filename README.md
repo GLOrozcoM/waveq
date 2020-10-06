@@ -5,8 +5,8 @@ A platform for easily visualizing and querying wave data to inform deployment of
 ## Table of contents
 * [Overview](#Overview)
 * [Examples](#Examples)
-* [Tech Stack](#Tech Stack)
-* [Cluster Setup](#Cluster setup)
+* [Tech Stack](#Tech-Stack)
+* [Cluster Setup](#Cluster-setup)
 
 ## Overview
 
