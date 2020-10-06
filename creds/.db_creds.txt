@@ -1,0 +1,1 @@
+name_of_role, password_for_role
