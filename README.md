@@ -4,7 +4,9 @@ A platform for easily visualizing and querying wave data to inform deployment of
 
 ## Table of contents
 * [Overview](#Overview)
-* [Tech stack](#Tech stack)
+* [Examples](#Examples)
+* [Tech Stack](#Tech Stack)
+* [Cluster Setup](#Cluster setup)
 
 ## Overview
 
@@ -24,9 +26,43 @@ queries and visualizations without in depth knowledge of the H5 file format is a
 
 WaveQ offers an intuitive solution - an intuitive visualization platform with querying capabilities.
 
+## Examples 
+
+Analysts and data scientists benefit from interacting with data in two ways - querying 
+and visualizing. 
+
+### Querying
+
+Pick a time table from the database.
+
+Choose metrics. 
+
+Download your data.
+
+### Visualizing 
+
+Pick a table from the database.
+
+Specify time series as the query option.
+
+Visualize the metric of interest across time.
+
+Compare various locations easily.
+
 ## Tech Stack
 
 1. AWS S3 service stores raw data from the DOE.
 2. PySpark reads in data and performs processing on data.
 3. Data gets stored in TimescaleDB.
 4. Grafana interacts with TimescaleDB to allow for easy visualization and querying.
+
+## Cluster Setup
+
+I used AWS's EC2 service to create virtual instances. All instances were t2.large running
+on Ubuntu 20.04. I deployed a Spark cluster of three workers and one driver node. The driver 
+node connected to a separate TimescaleDB instance. A separate Grafana instance then connected 
+to TimescaleDB. 
+
+***Note: If trying to setup a similar pipeline on AWS, ensure all instances share communication permissions
+with a security group.*** 
+
