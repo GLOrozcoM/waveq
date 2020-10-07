@@ -9,10 +9,10 @@ from pyspark.sql.functions import monotonically_increasing_id
 from pyspark.sql.functions import lit
 
 def get_s3_data(year):
-    """ Interact with s3 to acquire wave data h5 files.
+    """
 
-    :param year: String ranging from 1979 to 2010.
-    :return: An h5 file containing wave data for a single year.
+    :param year:
+    :return:
     """
     s3_endpoint = "s3://wpto-pds-us-wave/v1.0.0/virtual_buoy/US_virtual_buoy_" + year + ".h5"
     print("Starting to get data for year {}.".format(year))
@@ -20,6 +20,41 @@ def get_s3_data(year):
     print("Completed getting h5 file from s3.")
     return h5_file
 
+def get_s3_data_hindcast(year):
+    """ Interact with s3 to acquire wave data h5 files.
+
+    :param year: String ranging from 1979 to 2010.
+    :return: An h5 file containing wave data for a single year.
+    """
+    s3_endpoint = "s3://wpto-pds-us-wave/v1.0.0/US_wave_" + year + ".h5"
+    print("Starting to get data for year {}.".format(year))
+    h5_file = call_s3_to_h5(s3_endpoint)
+    print("Completed getting h5 file from s3.")
+    return h5_file
+
+
+def extract_variables_hindcast(h5_file):
+    """ Get variables of interest from h5 file.
+
+    :param h5_file: An h5 file of wave data from s3 endpoint of the form
+    "s3://wpto-pds-us-wave/v1.0.0/virtual_buoy/US_virtual_buoy_" + year + ".h5"
+    :return:
+    """
+    # - take note of [:] which returns a numpy array
+    energy_h5 = h5_file['energy_period']
+    swh_h5 = h5_file['significant_wave_height']
+    omni_direct_pwr_h5 = h5_file['omni-directional_wave_power']
+    direct_coeff_h5 = h5_file['directionality_coefficient']
+    max_energy_direct_h5 = h5_file['maximum_energy_direction']
+    spectral_width_h5 = h5_file['spectral_width']
+
+    # Hourly, starting January 1st and going until December 31st
+    time_h5 = h5_file['time_index']
+    # Lat long format
+    print("Getting coordinates")
+    coord_h5 = h5_file['coordinates'][:]
+    print("Completed getting coordinates")
+    return energy_h5, swh_h5, time_h5, coord_h5, omni_direct_pwr_h5, direct_coeff_h5, max_energy_direct_h5, spectral_width_h5
 
 def extract_variables(h5_file):
     """ Get variables of interest from h5 file.
