@@ -2,6 +2,10 @@
 
 A platform for easily visualizing and querying wave data to inform deployment of wave energy converters. 
 
+![Regional](img/regional.png)
+![Comparison](img/direct.png)
+![Direct](img/compare.png)
+
 ## Table of contents
 * [Overview](#Overview)
 * [Examples](#Examples)
@@ -50,6 +54,8 @@ Visualize the metric of interest across time.
 Compare various locations easily.
 
 ## Tech Stack
+
+![Tech stack](img/tech_stack.png)
 
 1. AWS S3 service stores raw data from the DOE.
 2. PySpark reads in data and performs processing on data.
