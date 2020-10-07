@@ -14,6 +14,17 @@ sc = spark.sparkContext
 # Reduce information printed on spark terminal
 sc.setLogLevel("ERROR")
 
+def h5_to_spark(dataset):
+    """ Convert an h5 data set into a spark df.
+
+    :param dataset: An h5 data set.
+    :return: A spark df.
+    """
+    list_dataset = dataset.tolist()
+    rdd_dataset = sc.parallelize(list_dataset)
+    sp_dataset = rdd_dataset.toDF()
+    return sp_dataset
+
 def h5_to_pd_to_spark(dataset):
     """ Take an h5 dataset and convert into a pandas df, then spark df.
     Output a spark df.
@@ -35,7 +46,7 @@ def h5_time_to_pd_to_spark(dataset):
     :param dataset:
     :return:
     """
-    time_np = np.array(dataset)
+    time_np = dataset
     # TODO optimize for loop using apply or similar
     converted_time_np = []
     for entry in time_np:
