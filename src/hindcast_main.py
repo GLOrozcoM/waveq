@@ -2,9 +2,18 @@
 Module to automate reading of h5 datasets into RDD format into Spark
 -- ensure h5_names_paths_one.csv is on worker machines as well as the driver.
 
-Entire process for 4 years takes 496 seconds.
-For a single data set write to db it is 70 seconds (max bound).
-Turning a single rdd to a df can take up to 20 seconds.
+Time: 3 seconds
+Coordinates: 6 seconds
+
+6x
+Avg joining into data frame from distributed read: 15 secs.
+Avg zipping: 60 secs.
+Avg zipped rdd: 14 secs.
+
+6x
+Write to db: 280 secs.
+
+Entire pipeline: 2429 secs.
 """
 
 import h5py
@@ -238,8 +247,6 @@ def give_id_time(metric_df):
     metric_df = metric_df.withColumnRenamed('_2', "id_key")
     metric_df = metric_df.withColumn('time', metric_df['_1'].getItem('time'))
     metric_df = metric_df.drop('_1')
-
-    print("Metric looks like this: {}".format(metric_df.printSchema()))
     return metric_df
 
 
@@ -272,7 +279,7 @@ def join_time_to_metrics(metrics_with_id, time_df):
     return time_index_metrics
 
 
-def write_to_db(db_name, metrics_with_time_index, coordinates):
+def write_to_db(db_name, metrics_with_time_index, coordinates, start_year):
     """ Write ocean wave metrics and coordinates to a data base.
 
     :param db_name: Name of data base to write to.
@@ -285,8 +292,9 @@ def write_to_db(db_name, metrics_with_time_index, coordinates):
     print("Writing coordinates ended.")
     begin_all = time.time()
     for key in metrics_with_time_index:
-        table_name = key
-        data_frame = metrics_with_time_index[key]
+        table_name = key + "_" + str(start_year) + "_to_" + str(start_year + 3)
+        # Open up concurrent connections to db
+        data_frame = metrics_with_time_index[key].repartition(8)
         print("Writing {} to postgres.".format(table_name))
         begin_write = time.time()
         write_to_postgres(db_name, data_frame, table_name)
@@ -328,7 +336,7 @@ def run_four_year_block(start_year, end_year):
 
     # Write to postgresql
     db_name = "hindcast"
-    write_to_db(db_name, metrics_with_time_index, coord_df)
+    write_to_db(db_name, metrics_with_time_index, coord_df, start_year)
 
 
 if __name__ == "__main__":
@@ -340,9 +348,18 @@ if __name__ == "__main__":
     sc.setLogLevel("ERROR")
 
     begin = time.time()
+
+    # Cycle through all years until 2007
     start_year = 1979
     end_year = 1982
-    run_four_year_block(start_year, end_year)
+    for i in range(7):
+        print("Now working on the years {} through to {}.".format(start_year, end_year))
+        block_begin = time.time()
+        run_four_year_block(start_year, end_year)
+        end_clock = time.time() - block_begin
+        start_year += 4
+        end_year += 4
+
     end = time.time() - begin
     print("Entire process took {} seconds.".format(end))
 

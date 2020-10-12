@@ -1,4 +1,7 @@
 """
+This module encapsulates getting all buoy data and writing to a database where
+each table is structured by location and year.
+
 Benchmark against:
 - Module to encapsulate ingesting buoy data.
 - Currently takes 5671 seconds (94 minutes) to complete.
@@ -8,7 +11,7 @@ Benchmark against:
 
 
 from process.pandas_spark_converter import *
-from rdd_geo_buoy_ingestion_utility import *
+from buoy_ingestion_utility import *
 import time
 
 

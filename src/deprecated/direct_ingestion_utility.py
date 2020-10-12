@@ -8,6 +8,7 @@ from process.pandas_spark_converter import *
 from pyspark.sql.functions import monotonically_increasing_id
 from pyspark.sql.functions import lit
 
+
 def get_s3_data(year):
     """
 
@@ -19,6 +20,7 @@ def get_s3_data(year):
     h5_file = call_s3_to_h5(s3_endpoint)
     print("Completed getting h5 file from s3.")
     return h5_file
+
 
 def get_s3_data_hindcast(year):
     """ Interact with s3 to acquire wave data h5 files.
@@ -55,6 +57,7 @@ def extract_variables_hindcast(h5_file):
     coord_h5 = h5_file['coordinates'][:]
     print("Completed getting coordinates")
     return energy_h5, swh_h5, time_h5, coord_h5, omni_direct_pwr_h5, direct_coeff_h5, max_energy_direct_h5, spectral_width_h5
+
 
 def extract_variables(h5_file):
     """ Get variables of interest from h5 file.

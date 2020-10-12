@@ -8,7 +8,7 @@ Benchmark against:
 
 
 from process.pandas_spark_converter import *
-from rdd_geo_buoy_ingestion_utility import *
+from direct_ingestion_utility import *
 import time
 
 
@@ -44,6 +44,7 @@ def make_location_datasets(coord_sp, metric_list, time_sp, year, metric_names):
         print("Single location took {} seconds to complete".format(end_single_location))
 
 
+
 def write_to_db(db_name, geo_metrics_sp, year, j):
     """ Write geographic buoy power data for a particular year to db.
 
@@ -75,12 +76,18 @@ if __name__ == "__main__":
         energy_h5, swh_h5, time_h5, coord_h5, omni_direct_pwr_h5, \
         direct_coeff_h5, max_energy_direct_h5, spectral_width_h5 = extract_variables(h5_file)
 
+
+
+
         power_h5 = calculate_power(swh_h5, energy_h5)
         metric_list = [energy_h5, swh_h5, omni_direct_pwr_h5, direct_coeff_h5,
                        max_energy_direct_h5, spectral_width_h5, power_h5]
         metric_names = ["energy_period", "significant_wave_height", "omni_directional_power","directionality_coefficient",
                         "maximum_energy_directionality", "spectral_width", "power"]
         metrics_sp = convert_metrics_spark_df(metric_list)
+
+        # Final result, a list of metrics_sp
+
         time_sp, coord_sp = convert_coord_time_spark_df(time_h5, coord_h5)
 
         # Attach coordinates to individual locations and write individual tables to db
