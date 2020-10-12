@@ -33,12 +33,8 @@ def h5_to_pd_to_spark(data_set):
     :param data_set: An h5 data set.
     :return:
     """
-    print("Converting {} to pandas df".format(data_set))
     pd_data_frame = pd.DataFrame(np.array(data_set))
-    print("Finished converting {} to pandas df".format(data_set))
-    print("Converting pd {} to spark df".format(data_set))
     sp_data_frame = spark.createDataFrame(pd_data_frame)
-    print("Finished converting {} to spark df".format(data_set))
     return sp_data_frame
 
 
