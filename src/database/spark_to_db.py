@@ -25,5 +25,7 @@ def write_to_postgres(db_name, sp_data_frame, dataset_name):
     # -- place name of role and password for role in a single line in .db_creds.txt
     db_creds_file = "waveq/credentials/.db_creds.txt"
     properties = read_db_creds(db_creds_file)
+
     sp_data_frame.write.jdbc(url=url, table=table_name, mode=mode, properties=properties)
+
     print("Write to db ended for {}".format(dataset_name))
