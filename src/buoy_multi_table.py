@@ -2,6 +2,8 @@
 This module encapsulates getting all buoy data and writing to a database where
 each table is structured by location and year.
 
+DB: buoy_multi_table
+
 Benchmark against:
 - Module to encapsulate ingesting buoy data.
 - Currently takes 5671 seconds (94 minutes) to complete.
@@ -15,6 +17,77 @@ from buoy_ingestion_utility import *
 import time
 
 
+def give_id_og(metric_sp, location_index):
+    """ Assign an id column to a selected spark df.
+
+    :param metric_sp: Spark df with power metric.
+    :param location_index: Location index of coordinate; 57 distinct locations exist.
+    :return: A power spark df with an id.
+    """
+    single_column_metric = metric_sp.select("_" + str(location_index + 1))
+    single_column_metric = zip_to_id(single_column_metric, location_index)
+    return single_column_metric
+
+
+def zip_to_id(metric_df, location_index):
+    """ Assign an id column to a spark df.
+
+    :param metric_df: Spark df with ocean metric.
+    :param location_index: Locational index of coordinate; 57 distinct locations exist.
+    :return: A power spark df with an id.
+    """
+    rdd_df = metric_df.rdd.zipWithIndex()
+    metric_df = rdd_df.toDF()
+
+    # Rename index
+    metric_df = metric_df.withColumnRenamed('_2', "id_key")
+    metric_df = metric_df.withColumn('_' + str(location_index + 1), metric_df['_1'].getItem('_' + str(location_index + 1)))
+
+    # Crucial to not include column of columns
+    metric_df = metric_df.drop('_1')
+    return metric_df
+
+
+def give_id_all_metrics(metric_list, location_index):
+    """ Assign an id to all metrics.
+
+    :param metric_list: List containing all metrics.
+    :param location_index: Location index of coordinate; 57 distinct locations exist.
+    :return: A list of metrics with id keys.
+    """
+    N = len(metric_list)
+    id_metrics = []
+    for i in range(0, N):
+        single_id_metric = give_id_og(metric_list[i], location_index)
+        id_metrics.append(single_id_metric)
+    return id_metrics
+
+
+def give_id_time(metric_df):
+    """ Assign an id column to a spark df.
+
+    :param metric_df: Spark df with metric.
+    :return: A spark df with an id.
+    """
+    print("Starting to zip indices time.")
+    begin_zip = time.time()
+    rdd_df = metric_df.rdd.zipWithIndex()
+    end_zip = time.time() - begin_zip
+    print("Completed zipping indices in {} seconds.".format(end_zip))
+
+    print("Going from zipped rdd to df.")
+    begin_df = time.time()
+    metric_df = rdd_df.toDF()
+    end_df = time.time() - begin_df
+    print("Completed going from zipped rdd to df in {} seconds.".format(end_df))
+
+    # Rename
+    metric_df = metric_df.withColumnRenamed('_2', "id_key")
+    metric_df = metric_df.withColumn('time', metric_df['_1'].getItem('time'))
+    metric_df = metric_df.drop('_1')
+    return metric_df
+
+
 def make_location_datasets(coord_sp, metric_list, time_sp, year, metric_names):
     """ Given a year and relevant data sets, write out a power table for a single location.
 
@@ -24,7 +97,7 @@ def make_location_datasets(coord_sp, metric_list, time_sp, year, metric_names):
     """
     print("Starting to create geo tagged data sets")
     coords_sp_driver = coord_sp.collect()
-    for location_index in range(0, 57):
+    for location_index in range(1, 58):
         begin_single_location = time.time()
         print("Start creating {}th location".format(location_index))
 
@@ -35,11 +108,12 @@ def make_location_datasets(coord_sp, metric_list, time_sp, year, metric_names):
         lat, long = access_lat_long(coords_sp_driver, location_index)
         geo_metrics_sp = assign_coords(geo_metrics_sp, lat, long)
 
-        time_sp = time_sp.withColumn("id_key", monotonically_increasing_id())
+
+        time_sp = give_id_time(time_sp)
         geo_metrics_sp = geo_metrics_sp.join(time_sp, on="id_key")
 
         # Database writing
-        db_name = "benchmark_rdd"
+        db_name = "buoy_multi_table"
         write_to_db(db_name, geo_metrics_sp, year, location_index)
 
         print("Finished creating a single location based data set.")
@@ -58,7 +132,7 @@ def write_to_db(db_name, geo_metrics_sp, year, j):
     """
     print("Started writing {}th geo tagged data set to db.".format(j))
     begin = time.time()
-    write_to_postgres(db_name, geo_metrics_sp, "geo_metrics_" + year + "_loc" + str(j))
+    write_to_postgres(db_name, geo_metrics_sp, "wave_metrics_" + year + "_loc" + str(j))
     end = time.time() - begin
     print("Completed writing geo data set to db in {} seconds.".format(end))
 
