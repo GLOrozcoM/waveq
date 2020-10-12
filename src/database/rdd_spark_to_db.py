@@ -26,9 +26,5 @@ def write_to_postgres(db_name, sp_data_frame, dataset_name):
     db_creds_file = "waveq/credentials/.db_creds.txt"
     properties = read_db_creds(db_creds_file)
 
-    sp_data_frame.write.jdbc(url=url, table=table_name, mode=mode, properties=properties) \
-                .option("createTableColumnTypes",
-                        "id_key bigint, energy_period numeric, significant_wave_height numeric, omni_directional_power numeric,"
-                        "directionality_coefficient numeric, maximum_energy_directionality numeric, spectral_width numeric,"
-                        "power numeric, lat numeric, long numeric, time timestamp")
+    sp_data_frame.write.option("batchsize","20000").jdbc(url=url, table=table_name, mode=mode, properties=properties)
     print("Write to db ended for {}".format(dataset_name))
