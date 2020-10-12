@@ -1,5 +1,6 @@
 """
 This module encapsulate creating csv files containing s3 links to h5 ocean wave data.
+NOTE this module only writes up to the year 2009.
 """
 
 import csv
@@ -78,7 +79,7 @@ def write_four_year_block_hindcast(start_year):
 
     for single_set in data_sets:
         rows = make_rows_hindcast(start_year, single_set)
-        file_name = "src/s3_file_links/hindcast_links/" + single_set + str(start_year) + \
+        file_name = "src/s3_file_links/hindcast_links/" + single_set + "_" + str(start_year) + \
                     "_to_" + str(start_year + 3) + ".csv"
 
         f = open(file_name, "w")
@@ -97,8 +98,8 @@ def write_four_year_block_buoy(start_year):
                  'omni-directional_wave_power', 'significant_wave_height', 'spectral_width', 'time_index']
 
     for single_set in data_sets:
-        rows = make_rows_hindcast(start_year, single_set)
-        file_name = "src/s3_file_links/buoy_links/" + single_set + str(start_year) + "_to_" + str(start_year + 3) + ".csv"
+        rows = make_rows_buoy(start_year, single_set)
+        file_name = "src/s3_file_links/buoy_links/" + single_set + "_" + str(start_year) + "_to_" + str(start_year + 3) + ".csv"
 
         f = open(file_name, "w")
         with f:
@@ -112,4 +113,4 @@ if __name__ == "__main__":
     for cycle in range(10):
         write_four_year_block_hindcast(start_year)
         write_four_year_block_buoy(start_year)
-        start_year += 3
+        start_year += 4
