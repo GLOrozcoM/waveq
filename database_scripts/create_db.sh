@@ -1,8 +1,10 @@
 #!/bin/bash
 # Tables in this db are a single location for a year.
-psql -U postgres -c "CREATE DATABASE buoy_by_location;"
+psql -U postgres -c "CREATE DATABASE buoy_multi_table;"
+
 # Tables in this db are multiple locations per year.
-psql -U postgres -c "CREATE DATABASE buoy_by_year;"
+psql -U postgres -c "CREATE DATABASE buoy_single_table;"
+
 # Tables follow two formats:
 # 1. A single variate table across multiple years.
 # 2. A coordinates table to perform joins on.
