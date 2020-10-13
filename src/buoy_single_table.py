@@ -4,11 +4,6 @@ a database where each table is structured by year.
 
 DB: buoy_single_table
 
-Benchmark against:
-- Module to encapsulate ingesting buoy data.
-- Currently takes 5671 seconds (94 minutes) to complete.
-- Single year takes 174 seconds to complete.
-- Single location write out takes 3 seconds to complete.
 """
 
 
@@ -89,7 +84,7 @@ def give_id_time(metric_df):
 
 
 def make_location_datasets(coord_sp, metric_list, time_sp, year, metric_names):
-    """ Given a year and relevant data sets, write out a power table for a single location.
+    """ Given a year and relevant data sets, write out an ocean wave metrics table for a single location.
 
     :param metric_list: A list containing metrics to join together.
     :param year: A year ranging from 1979 to 2010.
@@ -97,27 +92,32 @@ def make_location_datasets(coord_sp, metric_list, time_sp, year, metric_names):
     """
     print("Starting to create geo tagged data sets")
     coords_sp_driver = coord_sp.collect()
-    for location_index in range(1, 58):
-        begin_single_location = time.time()
-        print("Start creating {}th location".format(location_index))
+    for location_index in range(0, 57):
+        # Location 0 may not have any entries so ignore
+        if location_index == 0:
+            pass
+        else:
+            begin_single_location = time.time()
+            print("Start creating {}th location".format(location_index))
 
-        # Combine all metrics
-        id_metrics = give_id_all_metrics(metric_list, location_index)
-        named_metrics = rename_metrics(id_metrics, metric_names, location_index)
-        geo_metrics_sp = join_metrics(named_metrics)
-        lat, long = access_lat_long(coords_sp_driver, location_index)
-        geo_metrics_sp = assign_coords(geo_metrics_sp, lat, long)
+            # Combine all metrics
+            id_metrics = give_id_all_metrics(metric_list, location_index)
+            named_metrics = rename_metrics(id_metrics, metric_names, location_index)
+            geo_metrics_sp = join_metrics(named_metrics)
+            lat, long = access_lat_long(coords_sp_driver, location_index)
+            geo_metrics_sp = assign_coords(geo_metrics_sp, lat, long)
 
-        time_sp = give_id_time(time_sp)
-        geo_metrics_sp = geo_metrics_sp.join(time_sp, on="id_key")
 
-        # Database writing
-        db_name = "buoy_single_table"
-        write_to_db(db_name, geo_metrics_sp, year, location_index)
+            time_sp = give_id_time(time_sp)
+            geo_metrics_sp = geo_metrics_sp.join(time_sp, on="id_key")
 
-        print("Finished creating a single location based data set.")
-        end_single_location = time.time() - begin_single_location
-        print("Single location took {} seconds to complete".format(end_single_location))
+            # Database writing
+            db_name = "buoy_single_table"
+            write_to_db(db_name, geo_metrics_sp, year, location_index)
+
+            print("Finished creating a single location based data set.")
+            end_single_location = time.time() - begin_single_location
+            print("Single location took {} seconds to complete".format(end_single_location))
 
 
 def write_to_db(db_name, geo_metrics_sp, year, j):
