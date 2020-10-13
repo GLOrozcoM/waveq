@@ -2,18 +2,12 @@
 Module to automate reading of h5 datasets into RDD format into Spark
 -- ensure h5_names_paths_one.csv is on worker machines as well as the driver.
 
-Time: 3 seconds
-Coordinates: 6 seconds
-
-6x
-Avg joining into data frame from distributed read: 15 secs.
-Avg zipping: 60 secs.
-Avg zipped rdd: 14 secs.
-
-6x
-Write to db: 280 secs.
-
-Entire pipeline: 2429 secs.
+- Currently takes 208 minutes (~3.5 hours) to complete.
+- Single cycle (four years worth of data) takes ~26 minutes (1578 seconds) to complete.
+- Unpacking zipped columns takes ~70 seconds.
+- Zipping indices takes ~60 seconds.
+- Going from zipped rdd to df takes ~15 seconds.
+- Single db write out takes ~300 seconds to complete.
 """
 
 import h5py
