@@ -4,11 +4,10 @@ each table is structured by location and year.
 
 DB: buoy_multi_table
 
-Benchmark against:
 - Module to encapsulate ingesting buoy data.
-- Currently takes 5671 seconds (94 minutes) to complete.
-- Single year takes 174 seconds to complete.
-- Single location write out takes 3 seconds to complete.
+- Currently takes 234 minutes (3.9 hours) to complete.
+- Single year takes (up to) 440 seconds to complete.
+- Single location write out takes 10 seconds to complete.
 """
 
 
@@ -97,7 +96,7 @@ def make_location_datasets(coord_sp, metric_list, time_sp, year, metric_names):
     """
     print("Starting to create geo tagged data sets")
     coords_sp_driver = coord_sp.collect()
-    for location_index in range(1, 58):
+    for location_index in range(0, 57):
         begin_single_location = time.time()
         print("Start creating {}th location".format(location_index))
 
