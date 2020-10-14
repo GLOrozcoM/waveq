@@ -11,6 +11,7 @@ A platform for easily visualizing and querying wave data to inform deployment of
 * [Examples](#Examples)
 * [Tech Stack](#Tech-Stack)
 * [Cluster Setup](#Cluster-setup)
+* [Directory Structure](#Directory-structure)
 
 ## Overview
 
@@ -20,7 +21,7 @@ and predict wave conditions for wave energy converters.
 
 In August 2020, the Department of Energy (DOE) released a 2.7TiB wave hindcast and buoy data 
 set containing wave characteristics along the Exclusive Economic Zone (EEZ) on the US west coast. 
-Details regarding the data can be found on AWS(insert link) and the data's GitHub ReadME(insert link).
+Details regarding the data can be found on [AWS](https://registry.opendata.aws/wpto-pds-us-wave/) and the data's GitHub [ReadME](https://github.com/openEDI/documentation/blob/master/US_Wave.md).
 Data contain high resolution (up to hourly) read outs from over 600,000 points on the EEZ part of 
 the US west coast and cover over 10 different wave variables. 
 
@@ -28,30 +29,7 @@ Performing analyses on the data is currently difficult. Data is divided into yea
 in an H5 format. Variables are divided into data sets within each H5 file, and performing 
 queries and visualizations without in depth knowledge of the H5 file format is almost impossible.
 
-WaveQ offers an intuitive solution - an intuitive visualization platform with querying capabilities.
-
-## Examples 
-
-Analysts and data scientists benefit from interacting with data in two ways - querying 
-and visualizing. 
-
-### Querying
-
-Pick a time table from the database.
-
-Choose metrics. 
-
-Download your data.
-
-### Visualizing 
-
-Pick a table from the database.
-
-Specify time series as the query option.
-
-Visualize the metric of interest across time.
-
-Compare various locations easily.
+WaveQ offers a solution - an intuitive visualization platform with querying capabilities.
 
 ## Tech Stack
 
@@ -72,3 +50,13 @@ to TimescaleDB.
 ***Note: If trying to setup a similar pipeline on AWS, ensure all instances share communication permissions
 with a security group.*** 
 
+## Directory Structure
+
+The directory structure follows a simple format. 
+* `creds` holds sample credentials (not real) that would be needed
+to run operations in the cluster. 
+* `database_scripts` contains sample bash scripts used to perform necessary conversions on 
+tables written to the database. 
+* `img` contains images used throughout the ReadME.
+* `src` has all Python source code used to coordinate PySpark jobs. Please see the ReadME
+in `src` for further info. 
