@@ -10,6 +10,7 @@ A platform for easily visualizing and querying wave data to inform deployment of
 * [Overview](#Overview)
 * [Examples](#Examples)
 * [Tech Stack](#Tech-Stack)
+* [Engineering Challenges](#Engineering-Challenges)
 * [Cluster Setup](#Cluster-setup)
 * [Directory Structure](#Directory-structure)
 
@@ -39,6 +40,21 @@ WaveQ offers a solution - an intuitive visualization platform with querying capa
 2. PySpark reads in data and performs processing on data.
 3. Data gets stored in TimescaleDB.
 4. Grafana interacts with TimescaleDB to allow for easy visualization and querying.
+
+## Engineering Challenges
+
+1. Ingestion of H5 files - raw DoE data came in the form .h5 files. For the unfamiliar, these files can be thought of 
+as a multiple data set storage file type. In each .h5 file, you can have multiple data sets, meta data about data sets, 
+and a directory like structure. Since no widespread Spark connection for reading these files exists, I implemented 
+a file source link strategy that distributes the reading of a single .h5 file across the spark cluster. More specifically,
+I created several csv files (using an automated Python script) each containing multiple S3 file bucket links. Using Spark's
+`flatMap()` function, I can read multiple files simultaneously and join them into a single data frame for later operations.
+2. Disparate data sets - each .h5 file contained multiple data sets on ocean wave metrics. These data sets, however, did not 
+contain id keys to perform joins on and figuring out connections between locational coordinates and time required a long look
+at the data. I manually assigned id keys to data sets of interest and performed locational and time stamp joins 
+to produce a simpler table type for querying and visualization purposes. Additionally, the time stamp for data sets
+is a byte string (using Python's `h5py` module) and required a custom conversion using `numpy`.
+
 
 ## Cluster Setup
 
