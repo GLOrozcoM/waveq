@@ -17,9 +17,7 @@ def get_s3_data(year):
     :return:
     """
     s3_endpoint = "s3://wpto-pds-us-wave/v1.0.0/virtual_buoy/US_virtual_buoy_" + year + ".h5"
-    print("Starting to get data for year {}.".format(year))
     h5_file = call_s3_to_h5(s3_endpoint)
-    print("Completed getting h5 file from s3.")
     return h5_file
 
 
@@ -30,9 +28,7 @@ def get_s3_data_hindcast(year):
     :return: An h5 file containing wave data for a single year.
     """
     s3_endpoint = "s3://wpto-pds-us-wave/v1.0.0/US_wave_" + year + ".h5"
-    print("Starting to get data for year {}.".format(year))
     h5_file = call_s3_to_h5(s3_endpoint)
-    print("Completed getting h5 file from s3.")
     return h5_file
 
 
@@ -54,9 +50,7 @@ def extract_variables_hindcast(h5_file):
     # Hourly, starting January 1st and going until December 31st
     time_h5 = h5_file['time_index']
     # Lat long format
-    print("Getting coordinates")
     coord_h5 = h5_file['coordinates'][:]
-    print("Completed getting coordinates")
     return energy_h5, swh_h5, time_h5, coord_h5, omni_direct_pwr_h5, direct_coeff_h5, max_energy_direct_h5, spectral_width_h5
 
 
@@ -89,10 +83,8 @@ def calculate_power(swh_h5, energy_h5):
     :param energy_h5: Energy period of wave.
     :return: Power in h5 file format.
     """
-    print("--calculating power")
     # ormula for wattage power
     power_h5 = 0.5 * (swh_h5 ** 2) * energy_h5
-    print("--completed power")
     return power_h5
 
 
@@ -103,15 +95,9 @@ def convert_coord_time_spark_df(time_h5, coord_h5):
     :param coord_h5: Coordinates in h5 format.
     :return: Data sets converted to spark data frames.
     """
-    print("Converting time to spark df")
     time_sp = h5_time_to_pd_to_spark(time_h5)
     time_sp = time_sp.withColumnRenamed("0", "time")
-    print("Completed time conversion to spark df")
-
-    print("Converting coordinates to spark df")
     coord_sp = h5_to_spark(coord_h5)
-    print("Completed coordinate conversion to spark df")
-
     return time_sp, coord_sp
 
 
@@ -124,9 +110,7 @@ def convert_metrics_spark_df(metric_list):
     N = len(metric_list)
     converted_metrics = []
     for i in range(0, N):
-        print("Converting {} to spark df".format(metric_list[i]))
         single_metric_sp = h5_to_spark(metric_list[i][:])
-        print("Completed {} conversion to spark df".format(metric_list[i]))
         converted_metrics.append(single_metric_sp)
     return converted_metrics
 
@@ -140,9 +124,7 @@ def write_to_db(db_name, geo_metrics_sp, year, j):
     :param j: Location index for data set.
     :return: None
     """
-    print("Started writing {}th geo tagged data set to db.".format(j))
     write_to_postgres(db_name, geo_metrics_sp, "geo_metrics_" + year)
-    print("Completed writing geo data set to db.")
 
 
 def access_lat_long(coords_sp_driver, j):
@@ -236,11 +218,9 @@ def make_location_datasets(coord_sp, metric_list, time_sp, year, metric_names):
     :param year: A year ranging from 1979 to 2010.
     :return: None
     """
-    print("Starting to create geo tagged data sets")
     coords_sp_driver = coord_sp.collect()
     for location_index in range(0, 57):
         begin_single_location = time.time()
-        print("Start creating {}th location".format(location_index))
 
         # Combine all metrics
         id_metrics = give_id_all_metrics(metric_list, location_index)
@@ -256,6 +236,4 @@ def make_location_datasets(coord_sp, metric_list, time_sp, year, metric_names):
         db_name = "benchmark_rdd"
         write_to_db(db_name, geo_metrics_sp, year, location_index)
 
-        print("Finished creating a single location based data set.")
         end_single_location = time.time() - begin_single_location
-        print("Single location took {} seconds to complete".format(end_single_location))

@@ -4,10 +4,7 @@ each table is structured by location and year.
 
 DB: buoy_multi_table
 
-- Module to encapsulate ingesting buoy data.
 - Currently takes 234 minutes (3.9 hours) to complete.
-- Single year takes (up to) 440 seconds to complete.
-- Single location write out takes 10 seconds to complete.
 """
 
 
@@ -68,17 +65,13 @@ def give_id_time(metric_df):
     :param metric_df: Spark df with metric.
     :return: A spark df with an id.
     """
-    print("Starting to zip indices time.")
     begin_zip = time.time()
     rdd_df = metric_df.rdd.zipWithIndex()
     end_zip = time.time() - begin_zip
-    print("Completed zipping indices in {} seconds.".format(end_zip))
 
-    print("Going from zipped rdd to df.")
     begin_df = time.time()
     metric_df = rdd_df.toDF()
     end_df = time.time() - begin_df
-    print("Completed going from zipped rdd to df in {} seconds.".format(end_df))
 
     # Rename
     metric_df = metric_df.withColumnRenamed('_2', "id_key")
@@ -94,11 +87,9 @@ def make_location_datasets(coord_sp, metric_list, time_sp, year, metric_names):
     :param year: A year ranging from 1979 to 2010.
     :return: None
     """
-    print("Starting to create geo tagged data sets")
     coords_sp_driver = coord_sp.collect()
     for location_index in range(0, 57):
         begin_single_location = time.time()
-        print("Start creating {}th location".format(location_index))
 
         # Combine all metrics
         id_metrics = give_id_all_metrics(metric_list, location_index)
@@ -115,9 +106,7 @@ def make_location_datasets(coord_sp, metric_list, time_sp, year, metric_names):
         db_name = "buoy_multi_table"
         write_to_db(db_name, geo_metrics_sp, year, location_index)
 
-        print("Finished creating a single location based data set.")
         end_single_location = time.time() - begin_single_location
-        print("Single location took {} seconds to complete".format(end_single_location))
 
 
 def write_to_db(db_name, geo_metrics_sp, year, j):
@@ -129,11 +118,9 @@ def write_to_db(db_name, geo_metrics_sp, year, j):
     :param j: Location index for data set.
     :return: None
     """
-    print("Started writing {}th geo tagged data set to db.".format(j))
     begin = time.time()
     write_to_postgres(db_name, geo_metrics_sp, "wave_metrics_" + year + "_loc" + str(j))
     end = time.time() - begin
-    print("Completed writing geo data set to db in {} seconds.".format(end))
 
 
 
@@ -163,8 +150,5 @@ if __name__ == "__main__":
         make_location_datasets(coord_sp, metrics_sp, time_sp, year, metric_names)
 
         end_single_year = time.time() - begin_single_year
-        print("A single year took {} seconds to process".format(end_single_year))
 
     end_all_years = time.time() - begin_all_years
-    print("Geographic focus of buoy ingestion and processing completed")
-    print("Process took {} many seconds to complete".format(end_all_years))
