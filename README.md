@@ -26,7 +26,7 @@ Details regarding the data can be found on [AWS](https://registry.opendata.aws/w
 Data contain high resolution (up to hourly) read outs from over 600,000 points on the EEZ part of 
 the US west coast and cover over 10 different wave variables. 
 
-Performing analyses on the data is currently difficult. Data is divided into yearly files
+Performing analyses on the data is currently difficult. Data are divided into yearly files
 in an H5 format. Variables are divided into data sets within each H5 file, and performing 
 queries and visualizations without in depth knowledge of the H5 file format is almost impossible.
 
